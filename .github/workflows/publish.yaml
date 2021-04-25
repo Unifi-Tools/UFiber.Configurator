@@ -1,0 +1,72 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: Build
+        run: |
+          dotnet publish -r osx-x64 -c Release -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true -o build/macos-x64 src/UFiber.Configurator
+          dotnet publish -r linux-x64 -c Release -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true -o build/linux-x64 src/UFiber.Configurator
+          dotnet publish -r win-x64 -c Release -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true -o build/win-x64 src/UFiber.Configurator
+      - name: Pack
+        working-directory: build
+        run: |
+          tar -czvf UFiber.Configurator-MacOS.tar.gz macos-x64
+          tar -czvf UFiber.Configurator-Linux.tar.gz linux-x64
+          zip -r UFiber.Configurator-Windows.zip win-x64      
+  release:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload MacOS
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/UFiber.Configurator-MacOS.tar.gz
+          asset_name: UFiber.Configurator-MacOS.tar.gz
+          asset_content_type: application/gzip
+      - name: Upload Linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/UFiber.Configurator-Linux.tar.gz
+          asset_name: UFiber.Configurator-Linux.tar.gz
+          asset_content_type: application/gzip
+      - name: Upload Windows
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/UFiber.Configurator-Windows.zip
+          asset_name: UFiber.Configurator-Windows.zip
+          asset_content_type: application/zip
+
+

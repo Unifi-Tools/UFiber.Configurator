@@ -4,14 +4,13 @@ using Renci.SshNet;
 using UFiber.Configurator;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.Text;
-using System.Linq;
 
 var rootCommand = new RootCommand("Apply configuration changes to UFiber devices")
 {
     new Option<string>(
         "--host",
-        "IP or hostname of the target UFiber device.", ArgumentArity.ExactlyOne),
+        getDefaultValue: () => "192.168.1.1",
+        "IP or hostname of the target UFiber device."),
     new Option<string>(
         "--user",
         getDefaultValue: () => "ubnt",
@@ -171,13 +170,13 @@ rootCommand.Handler = CommandHandler
                 }
                 Console.WriteLine("Uploaded!");
                 Console.WriteLine("### Applying patched file on the target UFiber device...");
-                // cmd = ssh.RunCommand($"dd if=/tmp/{patchedFileName} of=/dev/mtdblock3 && rm /tmp/{patchedFileName}");
-                // if (cmd.ExitStatus != 0)
-                // {
-                //     Console.Error.WriteLine($"Failure to apply patched image file. Error: {cmd.Error}");
-                //     Environment.ExitCode = cmd.ExitStatus;
-                //     return;
-                // }
+                cmd = ssh.RunCommand($"dd if=/tmp/{patchedFileName} of=/dev/mtdblock3 && rm /tmp/{patchedFileName}");
+                if (cmd.ExitStatus != 0)
+                {
+                    Console.Error.WriteLine($"Failure to apply patched image file. Error: {cmd.Error}");
+                    Environment.ExitCode = cmd.ExitStatus;
+                    return;
+                }
                 Console.WriteLine("### Applied patch! Please reboot your UFiber device to load the new image.");
             }
             else
