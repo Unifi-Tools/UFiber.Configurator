@@ -32,13 +32,22 @@ Essentially this is the flow:
 
 ## Supported UFiber devices
 
-- UF-Loco
-- UF-Nano-G
+- UF-Loco (firmware 4.3.0)
+- UF-Nano-G (firmware 4.3.0)
 - UF-Instant *(still under test)*
 
-## Usage
+## Requirements
 
-You can find release packages for each OS on the [Releases section](https://github.com/Unifi-Tools/UFiber.Configurator/releases) of this repository.
+Unlike other approaches found over the internet, this tool doesn't require any dependencies and is totally self-contained. 
+
+All you need is:
+
+1. A Windows, Linux or MacOS computer;
+2. The target UFiber device with a supported firmware (you can download the firmware files from [Ubiquiti downloads page](https://www.ui.com/download/#!ufiber));
+3. Have SSH enabled on the target UFiber device.
+4. Download the package from the [Releases section](https://github.com/Unifi-Tools/UFiber.Configurator/releases) of this repository for your OS.
+
+## Usage
 
 By running the `UFiber.Configurator --help` you will get all the parameters used by this tool:
 
@@ -69,4 +78,4 @@ Options:
 
 Please feel free to open issues and contribute back.
 
-A huge thanks and kudos to @jakesays for all the help while creating this tool.
+A huge thanks and kudos to [@jakesays](https://github.com/jakesays) for all the help while creating this tool.
