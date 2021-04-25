@@ -4,6 +4,8 @@ using Renci.SshNet;
 using UFiber.Configurator;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Text;
+using System.Linq;
 
 var rootCommand = new RootCommand("Apply configuration changes to UFiber devices")
 {
@@ -111,9 +113,9 @@ rootCommand.Handler = CommandHandler
                 return;
             }
 
-            var nvramInfo = new NVRAMInfo(File.ReadAllBytes(Path.Combine(localDumps, imgName)));
+            var ram = new NVRAM(File.ReadAllBytes(Path.Combine(localDumps, imgName)));
             Console.WriteLine("### Original Image ###");
-            Console.WriteLine(nvramInfo);
+            Console.WriteLine(ram);
 
             Console.WriteLine($"### Patching {imgName}...");
 
@@ -126,20 +128,21 @@ rootCommand.Handler = CommandHandler
             }
             else if (!string.IsNullOrWhiteSpace(vendor) && !string.IsNullOrWhiteSpace(serial))
             {
-                // TODO: Apply Serial to the nvram
+                ram.SetGponId(vendor);
+                ram.SetGponSerialNumber(serial);
             }
 
             if (!string.IsNullOrWhiteSpace(mac))
             {
-                // TODO: Apply MAC to the nvram
+                ram.SetBaseMacAddress(mac);
             }
 
             if (!string.IsNullOrWhiteSpace(slid))
             {
-                // TODO: Apply SLID to the nvram
+                ram.SetGponPassword(slid);
             }
 
-            var patched = nvramInfo.Patch();
+            var patched = ram.CompletePatch();
 
             const string localPatched = "./patched";
 
@@ -151,7 +154,7 @@ rootCommand.Handler = CommandHandler
             var patchedFileName = $"patched-{imgName}";
             File.WriteAllBytes(Path.Combine(localPatched, patchedFileName), patched);
             Console.WriteLine($"### Patched {imgName}!");
-            Console.WriteLine(nvramInfo);
+            Console.WriteLine(ram);
 
             if (!dryRun)
             {
@@ -168,13 +171,13 @@ rootCommand.Handler = CommandHandler
                 }
                 Console.WriteLine("Uploaded!");
                 Console.WriteLine("### Applying patched file on the target UFiber device...");
-                cmd = ssh.RunCommand($"dd if=/tmp/{patchedFileName} of=/dev/mtdblock3 && rm /tmp/{patchedFileName}");
-                if (cmd.ExitStatus != 0)
-                {
-                    Console.Error.WriteLine($"Failure to apply patched image file. Error: {cmd.Error}");
-                    Environment.ExitCode = cmd.ExitStatus;
-                    return;
-                }
+                // cmd = ssh.RunCommand($"dd if=/tmp/{patchedFileName} of=/dev/mtdblock3 && rm /tmp/{patchedFileName}");
+                // if (cmd.ExitStatus != 0)
+                // {
+                //     Console.Error.WriteLine($"Failure to apply patched image file. Error: {cmd.Error}");
+                //     Environment.ExitCode = cmd.ExitStatus;
+                //     return;
+                // }
                 Console.WriteLine("### Applied patch! Please reboot your UFiber device to load the new image.");
             }
             else
