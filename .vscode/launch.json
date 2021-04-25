@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "UFiber.Configurator",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/UFiber.Configurator/bin/Debug/net5.0/UFiber.Configurator.dll",
+            "args": [
+                "--host",
+                "192.168.200.2",
+                "--dry-run"
+            ],
+            "cwd": "${workspaceFolder}/src/UFiber.Configurator",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}
