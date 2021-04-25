@@ -6,9 +6,28 @@ on:
       - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
-  build:
+  osx:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: Build
+        run: |
+          dotnet publish -r osx-x64 -c Release -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true -o build/macos-x64 src/UFiber.Configurator
+      - name: Pack
+        working-directory: build
+        run: |
+          tar -czvf UFiber.Configurator-MacOS.tar.gz macos-x64
+      - uses: actions/upload-artifact@v2
+        if: success()
+        with:
+          name: UFiber.Configurator-MacOS.tar.gz
+          path: build/UFiber.Configurator-MacOS.tar.gz
+  linux:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v1
       - name: Setup .NET Core
@@ -17,20 +36,53 @@ jobs:
           dotnet-version: 5.0.x
       - name: Build
         run: |
-          dotnet publish -r osx-x64 -c Release -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true -o build/macos-x64 src/UFiber.Configurator
           dotnet publish -r linux-x64 -c Release -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true -o build/linux-x64 src/UFiber.Configurator
+      - name: Pack
+        working-directory: build
+        run: |
+          tar -czvf UFiber.Configurator-Linux.tar.gz linux-x64
+      - uses: actions/upload-artifact@v2
+        if: success()
+        with:
+          name: UFiber.Configurator-Linux.tar.gz
+          path: build/UFiber.Configurator-Linux.tar.gz
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: Build
+        run: |
           dotnet publish -r win-x64 -c Release -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true -o build/win-x64 src/UFiber.Configurator
       - name: Pack
         working-directory: build
         run: |
-          tar -czvf UFiber.Configurator-MacOS.tar.gz macos-x64
-          tar -czvf UFiber.Configurator-Linux.tar.gz linux-x64
-          zip -r UFiber.Configurator-Windows.zip win-x64      
+          tar -czvf UFiber.Configurator-Windows.zip win-x64
+      - uses: actions/upload-artifact@v2
+        if: success()
+        with:
+          name: UFiber.Configurator-Windows.zip
+          path: build/UFiber.Configurator-Windows.zip   
   release:
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [osx, linux, windows]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: UFiber.Configurator-MacOS.tar.gz
+          path: build
+      - uses: actions/download-artifact@v2
+        with:
+          name: UFiber.Configurator-Linux.tar.gz
+          path: build
+      - uses: actions/download-artifact@v2
+        with:
+          name: UFiber.Configurator-Windows.zip
+          path: build
       - name: Create Release
         id: create_release
         uses: actions/create-release@master
@@ -58,7 +110,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/UFiber.Configurator-Linux.tar.gz
           asset_name: UFiber.Configurator-Linux.tar.gz
-          asset_content_type: application/gzip
+          asset_content_type: application/gzip      
       - name: Upload Windows
         uses: actions/upload-release-asset@v1
         env:
