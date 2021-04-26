@@ -59,7 +59,7 @@ Usage:
   UFiber.Configurator [options]
 
 Options:
-  --host <host>      IP or hostname of the target UFiber device.
+  --host <host>      IP or hostname of the target UFiber device. [default: 192.168.1.1]
   --user <user>      SSH user name. [default: ubnt]
   --pw <pw>          SSH password. [default: ubnt]
   --port <port>      SSH port of the target UFiber device. [default: 22]
@@ -67,8 +67,10 @@ Options:
   --slid <slid>      The SLID (or PLOAM Password).
   --vendor <vendor>  4-digit Vendor Id (e.g. HWTC, MTSC, etc.). Combined with --serial, a GPON Serial Number is 
                      built.
-  --serial <serial>  8-digit serial number (e.g. 01234567). Combined with --vendor, a GPON Serial Number is 
-                     built.
+  --serial <serial>  8-digit (e.g. 01234567) serial number or 16-digit (e.g. 41-4C-43-4C-xx-xx-xx-xx) HEX serial 
+                     number. Combined with --vendor, a GPON Serial Number is built. Note: If a 16-digit HEX 
+                     value is provided, the first 4 bytes (8 digits) will replace whatever value was passed to 
+                     Vendor Id with '--vendor'.
   --mac <mac>        The desired MAC address to clone.
   --version          Show version information
   -?, -h, --help     Show help and usage information

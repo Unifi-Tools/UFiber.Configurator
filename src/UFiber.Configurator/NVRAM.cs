@@ -1,6 +1,7 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using static System.BitConverter;
 
 namespace UFiber.Configurator
@@ -11,6 +12,8 @@ namespace UFiber.Configurator
         private const int NvRamCrcLength = 4;
         private const uint NvRamOffset = 0x580;
         private const uint NvRamLength = 0x400;
+        private static readonly Regex _snMatcher = new Regex(@"^(([a-fA-F0-9]){2}-){7}([a-fA-F0-9]){2}$");
+        private static readonly Regex _pwMatcher = new Regex(@"^(([a-fA-F0-9]){2}-){9}([a-fA-F0-9]){2}$");
         public uint Checksum { get; private set; }
         public byte[] AfeId { get; }
         public byte[] VoiceBoardId { get; }
@@ -118,7 +121,16 @@ namespace UFiber.Configurator
 
         public void SetGponSerialNumber(string serialNumber)
         {
-            SetGponSerialNumber(Encoding.UTF8.GetBytes(serialNumber));
+            if (_snMatcher.IsMatch(serialNumber))
+            {
+                this.SetGponId(AsBytes(serialNumber.Replace("-", "")[0..8]));
+                SetGponSerialNumber(Encoding.UTF8.GetBytes(serialNumber.Replace("-", "")[8..]));
+            }
+            else
+            {
+                if (serialNumber.Contains("-")) throw new InvalidOperationException($"Invalid serial number: {serialNumber}.");
+                SetGponSerialNumber(Encoding.UTF8.GetBytes(serialNumber));
+            }
         }
 
         public void SetGponSerialNumber(ReadOnlySpan<byte> serialNumber)
@@ -149,7 +161,18 @@ namespace UFiber.Configurator
                 throw new ArgumentOutOfRangeException(nameof(password));
             }
 
-            var bits = Encoding.UTF8.GetBytes(password);
+            byte[] bits = default!;
+
+            if (_pwMatcher.IsMatch(password))
+            {
+                password = password.Replace("-", "").PadLeft(MaxPasswordLength, '0');
+                bits = AsBytes(password);
+            }
+            else
+            {
+                password = password.PadLeft(MaxPasswordLength, '0');
+                bits = Encoding.UTF8.GetBytes(password);
+            }
 
             SetBytes(bits.AsSpan(), PasswordOffset, password.Length);
 
@@ -245,14 +268,14 @@ namespace UFiber.Configurator
 
             while (dataIndex < data.Length)
             {
-                var highNibble = ToHex(data[dataIndex++]);
-                var lowNibble = ToHex(data[dataIndex++]);
+                var highNibble = FromHex(data[dataIndex++]);
+                var lowNibble = FromHex(data[dataIndex++]);
                 bits[bitsIndex++] = (byte)(highNibble << 4 | lowNibble);
             }
 
             return bits;
 
-            static int ToHex(char c) =>
+            static int FromHex(char c) =>
                 c switch
                 {
                     >= 'a' and <= 'f' => 10 + (c - 'a'),
