@@ -10,7 +10,13 @@
             "args": [
                 "--host",
                 "192.168.200.2",
-                "--dry-run"
+                "--dry-run",
+                "--vendor",
+                "HWTC",
+                "--serial",
+                "41-4C-43-4C-90-12-34-5a",
+                "--slid",
+                "12345"
             ],
             "cwd": "${workspaceFolder}/src/UFiber.Configurator",
             "console": "internalConsole",

@@ -34,7 +34,7 @@ var rootCommand = new RootCommand("Apply configuration changes to UFiber devices
         "4-digit Vendor Id (e.g. HWTC, MTSC, etc.). Combined with --serial, a GPON Serial Number is built.", ArgumentArity.ZeroOrOne),
     new Option<string>(
         "--serial",
-        "8-digit serial number (e.g. 01234567). Combined with --vendor, a GPON Serial Number is built.", ArgumentArity.ZeroOrOne),
+        "8-digit (e.g. 01234567) serial number or 16-digit (e.g. 41-4C-43-4C-xx-xx-xx-xx) HEX serial number. Combined with --vendor, a GPON Serial Number is built. Note: If a 16-digit HEX value is provided, the first 4 bytes (8 digits) will replace whatever value was passed to Vendor Id with '--vendor'.", ArgumentArity.ZeroOrOne),
     new Option<string>(
         "--mac",
         "The desired MAC address to clone.", ArgumentArity.ZeroOrOne),
