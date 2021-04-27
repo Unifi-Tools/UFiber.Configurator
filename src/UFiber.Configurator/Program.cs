@@ -118,16 +118,19 @@ rootCommand.Handler = CommandHandler
 
             Console.WriteLine($"### Patching {imgName}...");
 
-            if ((string.IsNullOrWhiteSpace(vendor) && !string.IsNullOrWhiteSpace(serial)) ||
-                (!string.IsNullOrWhiteSpace(vendor) && string.IsNullOrWhiteSpace(serial)))
+            if (!string.IsNullOrWhiteSpace(vendor) && string.IsNullOrWhiteSpace(serial))
             {
-                Console.Error.WriteLine($"To set the GPON Serial Number, you must pass both --vendor and --serial");
+                Console.Error.WriteLine($"To set the GPON Serial Number, you must pass both --vendor and --serial. You can skip the --vendor if you provide the full serial as HEX to the --serial.");
                 Environment.ExitCode = -1;
                 return;
             }
             else if (!string.IsNullOrWhiteSpace(vendor) && !string.IsNullOrWhiteSpace(serial))
             {
                 ram.SetGponId(vendor);
+                ram.SetGponSerialNumber(serial);
+            }
+            else if (string.IsNullOrWhiteSpace(vendor) && !string.IsNullOrWhiteSpace(serial))
+            {
                 ram.SetGponSerialNumber(serial);
             }
 
