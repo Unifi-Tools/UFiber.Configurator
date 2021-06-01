@@ -38,6 +38,9 @@ var rootCommand = new RootCommand("Apply configuration changes to UFiber devices
     new Option<string>(
         "--mac",
         "The desired MAC address to clone.", ArgumentArity.ZeroOrOne),
+    new Option<string>(
+        "--restore",
+        "Restore a previous version of the firmware.", ArgumentArity.ZeroOrOne)
 };
 
 SshClient GetSSHClient(string userName, string password, string host, int port = 22)
@@ -55,8 +58,8 @@ ScpClient GetSCPClient(string userName, string password, string host, int port =
 }
 
 rootCommand.Handler = CommandHandler
-    .Create<string, string, string, int, bool, string, string, string, string>(
-        (host, user, pw, port, dryRun, slid, vendor, serial, mac) =>
+    .Create<string, string, string, int, bool, string, string, string, string, string>(
+        (host, user, pw, port, dryRun, slid, vendor, serial, mac, fwToRestore) =>
         {
             if (string.IsNullOrWhiteSpace(host))
             {
@@ -109,6 +112,33 @@ rootCommand.Handler = CommandHandler
             {
                 Console.Error.WriteLine($"Failure downloading original image file from the UFiber device. Error: {ex.Message}.");
                 Environment.ExitCode = -1;
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(fwToRestore))
+            {
+                const string targetFileToRestore = "/tmp/restore.bin";
+                Console.WriteLine("Uploading original file to the target UFiber device...");
+                try
+                {
+                    scp.Upload(new FileInfo(fwToRestore), targetFileToRestore);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Failure uploading original image file to the UFiber device. Error: {ex.Message}.");
+                    Environment.ExitCode = -1;
+                    return;
+                }
+                Console.WriteLine("Uploaded!");
+                Console.WriteLine("### Applying original file on the target UFiber device...");
+                cmd = ssh.RunCommand($"dd if={targetFileToRestore} of=/dev/mtdblock3 && rm {targetFileToRestore}");
+                if (cmd.ExitStatus != 0)
+                {
+                    Console.Error.WriteLine($"Failure to apply original image file. Error: {cmd.Error}");
+                    Environment.ExitCode = cmd.ExitStatus;
+                    return;
+                }
+                Console.WriteLine("### Applied patch! Please reboot your UFiber device to load the new image.");
                 return;
             }
 
