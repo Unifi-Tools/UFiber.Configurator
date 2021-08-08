@@ -32,8 +32,8 @@ Essentially this is the flow:
 
 ## Supported UFiber devices
 
-- UF-Loco (firmware 4.3.0)
-- UF-Nano-G (firmware 4.3.0)
+- UF-Loco (firmware 4.3.1)
+- UF-Nano-G (firmware 4.3.1)
 - UF-Instant *(still under test)*
 
 ## Requirements
