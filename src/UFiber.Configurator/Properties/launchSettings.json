@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "UFiber.Configurator": {
+      "commandName": "Project",
+      "commandLineArgs": "-h 10.10.5.1"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}
