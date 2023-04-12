@@ -1,9 +1,7 @@
-﻿using System;
-using System.IO;
-using Renci.SshNet;
-using UFiber.Configurator;
-using CliFx;
 using System.Threading.Tasks;
+using CliFx;
+
+namespace UFiber.Configurator;
 
 public static class Program
 {
