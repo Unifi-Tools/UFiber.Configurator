@@ -59,8 +59,9 @@ ScpClient GetSCPClient(string userName, string password, string host, int port =
 
 rootCommand.Handler = CommandHandler
     .Create<string, string, string, int, bool, string, string, string, string, string>(
-        (host, user, pw, port, dryRun, slid, vendor, serial, mac, fwToRestore) =>
+        (host, user, pw, port, dryRun, slid, vendor, serial, mac, restore) =>
         {
+            var fwToRestore = restore; 
             if (string.IsNullOrWhiteSpace(host))
             {
                 Console.Error.WriteLine("Host is a required parameter and can't be empty.");

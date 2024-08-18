@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/UFiber.Configurator/bin/Debug/net5.0/UFiber.Configurator.dll",
+            "program": "${workspaceFolder}/src/UFiber.Configurator/bin/Debug/net8.0/UFiber.Configurator.dll",
             "args": [
                 "--host",
                 "192.168.200.2",
