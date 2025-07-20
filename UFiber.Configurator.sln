@@ -12,9 +12,11 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Debug|arm64 = Debug|arm64
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+		Release|arm64 = Release|arm64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -26,12 +28,16 @@ Global
 		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Debug|x64.Build.0 = Debug|Any CPU
 		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Debug|x86.Build.0 = Debug|Any CPU
+		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Debug|arm64.Build.0 = Debug|Any CPU
 		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Release|x64.ActiveCfg = Release|Any CPU
 		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Release|x64.Build.0 = Release|Any CPU
 		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Release|x86.ActiveCfg = Release|Any CPU
 		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Release|x86.Build.0 = Release|Any CPU
+		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Release|arm64.ActiveCfg = Release|Any CPU
+		{3D31C840-16B1-4F68-A886-4B8E49246B81}.Release|arm64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3D31C840-16B1-4F68-A886-4B8E49246B81} = {7D598BFE-5D3E-4E92-BEAC-492BBFD00B02}
